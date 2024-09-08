@@ -22,12 +22,15 @@ This Electron-based Text-to-Speech (TTS) application offers a versatile and user
 
 ## Installation
 
-[Provide installation instructions here]
-
+```bash
+git clone git@github.com:rthami/electron_TTS.git
+cd electron_TTS
+npm install
+```
 ## Usage
-
-[Provide usage instructions here]
-
+```bash
+npm start
+```
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
