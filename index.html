@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="HTMLTitle">Application de Synthèse Vocale</title>
+  <!-- Utilisation du fichier CSS local -->
+  <link rel="stylesheet" href="./css/pico.min.css">
+  <link rel="stylesheet" href="./css/main.css">
+  <style></style>
+</head>
+
+<body>
+  <main class="container">
+    <article>
+      <h3 data-i18n="HTMLTitle">Application de Synthèse Vocale</h3>
+      <div class="textBox">
+        <textarea id="text-input" placeholder="Entrez votre texte ici..."></textarea>
+        <button id="clear-text-button" class="icone-button" data-tooltip="Vider le texte" data-placement="left">
+          <img src="./icone/refresh-outline.svg" alt="Vider le texte" class="icone">
+        </button>
+      </div>
+      <select id="lang-select">
+        <option value="fr-FR" data-i18n="HTMLLangFR">Français</option>
+        <option value="en-US" data-i18n="HTMLLangEn">Anglais</option>
+        <option value="es-ES" data-i18n="HTMLLangES">Espagnol</option>
+        <option value="de-DE" data-i18n="HTMLLangDE">Allemand</option>
+        <option value="it-IT" data-i18n="HTMLLangIT">Italien</option>
+      </select>
+      <br>
+      <div class="grid">
+        <button id="speak-button" class="contrast">
+          <span data-i18n="HTMLPlayButton">Lire le Texte</span>
+          <img src="./icone/play-outline.svg" alt="Lire le Texte" class="icone">
+        </button>
+        <button id="pause-resume-button">
+          <span data-i18n="HTMLPauseButton">Pause/Reprendre</span>
+          <img src="./icone/pause-outline.svg" alt="Pause/Reprendre" class="icone">
+        </button>
+        <button id="stop-button" class="secondary">
+          <span data-i18n="HTMLStopButton">Stop</span>
+          <img src="./icone/stop-outline.svg" alt="Stop" class="icone">
+        </button>
+      </div>
+      <button id="file-input-button" class="fullsize">
+        <span data-i18n="HTMLOpenFileButton">Sélectionner un fichier texte</span>
+        <img src="./icone/download-outline.svg" alt="Sélectionner un fichier texte" class="icone">
+      </button>
+      <div id="status"></div>
+    </article>
+
+    <!-- Section des préférences utilisateur -->
+    <!-- Ajoutez un bouton pour ouvrir la modale -->
+    <button id="pref-button" class="icone-button" data-i18n="HTMLPrefButton" data-tooltip="Préférences">
+      <img src="./icone/settings-outline.svg" alt="Préférences" class="icone">
+    </button>
+
+    <!-- Créez la modale des préférences -->
+    <dialog id="pref-modal">
+      <article>
+        <h2 data-i18n="HTMLPrefTitle">Préférences</h2>
+        <p data-i18n="HTMLLangTitle">Sélectionnez vos préférences ci-dessous : </p>
+        <label for="interface-lang-select" data-i18n="HTMLLangTitleSelect">Langue de l'interface :</label>
+        <select id="interface-lang-select">
+          <option value="fr" data-i18n="HTMLLangFR">Français</option>
+          <option value="en" data-i18n="HTMLLangEn">Anglais</option>
+          <option value="es" data-i18n="HTMLLangES">Espagnol</option>
+          <option value="de" data-i18n="HTMLLangDE">Allemand</option>
+          <option value="it" data-i18n="HTMLLangIT">Italien</option>
+        </select>
+        <footer>
+          <button class="secondary" id="close-pref-modal" data-i18n="HTMLCloseButton">
+            Fermer
+          </button>
+          <button id="save-preferences" data-i18n="HTMLPrefSave">
+            Sauvegarder les préférences
+          </button>
+        </footer>
+      </article>
+    </dialog>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+
+</html>
