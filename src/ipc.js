@@ -13,67 +13,71 @@ const {
 } = require('./utils');
 const { setIsReading } = require('./state');
 
-// Variables globales pour gérer l'état de l'application
 let mplayerProcess = null;
 let isPaused = false;
 let isPicoAvailable = false;
 let isMplayerAvailable = false;
 
 function setupIPC(mainWindow) {
-  // Charger les préférences au démarrage
   const prefs = loadPreferences();
   let currentLanguage = prefs.interfaceLang;
   let currentColor = prefs.interfaceColor;
 
+  function sendToRenderer(channel, ...args) {
+    console.log(`Sending to renderer on channel ${channel} with args:`, ...args);  
+    if (mainWindow) {
+      mainWindow.webContents.send(channel, ...args);
+    } else {
+      console.error('mainWindow is not initialized');
+    }
+  }
 
-  // Vérifier la disponibilité des programmes nécessaires
   checkProgramAvailability('pico2wave', (picoExists) => {
     isPicoAvailable = picoExists;
     if (!picoExists) {
-      mainWindow.webContents.send('program-check', getMessage('errorPicoAbsent', currentLanguage));
+      sendToRenderer('program-check', getMessage('errorPicoAbsent', currentLanguage));
     }
 
     checkProgramAvailability('mplayer', (mplayerExists) => {
       isMplayerAvailable = mplayerExists;
       if (!mplayerExists) {
-        mainWindow.webContents.send('program-check', getMessage('errorMplayerAbsent', currentLanguage));
+        sendToRenderer('program-check', getMessage('errorMplayerAbsent', currentLanguage));
       }
 
       if (!picoExists && !mplayerExists) {
-        mainWindow.webContents.send('program-check', getMessage('errorBothAbsent', currentLanguage));
+        sendToRenderer('program-check', getMessage('errorBothAbsent', currentLanguage));
       }
     });
   });
 
-  // Gestionnaire pour sauvegarder les préférences
   ipcMain.on('save-preferences', (event, newPreferences) => {
     Object.assign(preferences, newPreferences);
     savePreferences(preferences);
     if (newPreferences.interfaceLang && newPreferences.interfaceLang !== currentLanguage) {
       currentLanguage = newPreferences.interfaceLang;
       const messages = loadMessages(currentLanguage);
-      mainWindow.webContents.send('language-changed', messages);
+      sendToRenderer('language-changed', messages);
     }
     if (newPreferences.interfaceColor && newPreferences.interfaceColor !== currentColor) {
       currentColor = newPreferences.interfaceColor;
-      mainWindow.webContents.send('color-changed', currentColor);
+      sendToRenderer('color-changed', currentColor);
     }
   });
 
-  // Gestionnaire pour changer la langue de l'interface
   ipcMain.on('change-language', (event, newLang) => {
     console.log('Changing language to:', newLang);
     currentLanguage = newLang;
     const messages = loadMessages(newLang);
-    mainWindow.webContents.send('language-changed', messages);
+    sendToRenderer('language-changed', messages);
     savePreferences({ ...preferences, interfaceLang: newLang });
   });
 
-  // Gestionnaire pour demander les messages initiaux
-  ipcMain.on('request-messages', (event) => {
-    const messages = loadMessages(currentLanguage);
-    event.reply('initial-messages', {initialMessages:messages});
-  });
+  // ipcMain.on('request-messages', (event) => {
+  //   console.log('from ipc =====================00');
+
+  //   const messages = loadMessages(currentLanguage);
+  //   event.reply('initial-messages', messages, currentColor, currentLanguage);
+  // });
 
   function processTextIntoChunks(text, charLimit) {
     const sentences = splitTextIntoPhrases(text);
@@ -81,14 +85,12 @@ function setupIPC(mainWindow) {
 
     sentences.forEach(sentence => {
       if (sentence.length > charLimit) {
-        // Si une phrase dépasse la limite, la diviser
         let remainingSentence = sentence;
         while (remainingSentence.length > 0) {
           chunks.push(remainingSentence.slice(0, charLimit).trim());
           remainingSentence = remainingSentence.slice(charLimit);
         }
       } else {
-        // Sinon, ajouter la phrase comme un chunk
         chunks.push(sentence.trim());
       }
     });
@@ -96,7 +98,10 @@ function setupIPC(mainWindow) {
     return chunks;
   }
 
-  // Gestionnaire pour la lecture de texte
+  ipcMain.on('speak-error', (event, message) => {
+    event.reply('speak-error', message);
+  });
+
   ipcMain.on('speak', (event, text, lang) => {
     if (!canRead(event, currentLanguage, isPicoAvailable, isMplayerAvailable, mplayerProcess, getMessage)) return;
 
@@ -104,10 +109,9 @@ function setupIPC(mainWindow) {
     console.log(`Nombre de chunks : ${chunks.length}`);
     readChunksSequentially(event, chunks, lang, currentLanguage, getMessage, (newMplayerProcess) => {
       mplayerProcess = newMplayerProcess;
-    });
+    }, sendToRenderer);
   });
 
-  // Gestionnaire pour mettre en pause ou reprendre la lecture
   ipcMain.on('pause-resume', (event) => {
     if (mplayerProcess) {
       mplayerProcess.stdin.write('p');
@@ -118,7 +122,6 @@ function setupIPC(mainWindow) {
     }
   });
 
-  // Gestionnaire pour arrêter la lecture
   ipcMain.on('stop', (event) => {
     setIsReading(false);
     if (mplayerProcess) {
@@ -130,7 +133,6 @@ function setupIPC(mainWindow) {
     }
   });
 
-  // Gestionnaire pour ouvrir la boîte de dialogue de sélection de fichier
   ipcMain.on('open-file-dialog', (event) => {
     dialog.showOpenDialog(mainWindow, {
       properties: ['openFile'],

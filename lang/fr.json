@@ -27,5 +27,10 @@
   "HTMLLangIT": "Italien",
   "HTMLLangTitle": "Sélectionnez vos préférences ci-dessous : ",
   "HTMLLangTitleSelect": "Langue de l'interface :",
-  "HTMLCloseButton": "Fermer"
+  "HTMLCloseButton": "Fermer",
+  "HTMLPrefButton":"Préférences",
+  "HTMLColorTitleSelect":"Couleurs:",
+  "HTMLColorBlue":"Bleu",
+  "HTMLColorJade":"Jade",
+  "HTMLColorIndigo":"Indigo"
 }

@@ -11,17 +11,17 @@ function createWindow() {
   const prefs = loadPreferences();
   const lang = prefs.interfaceLang || app.getLocale() || 'fr';
   const color = prefs.interfaceColor || 'blue';
-  console.log('main color ===========>>>>>>>>> ', color);  
-  console.log('Langue initiale:', lang);
+  // console.log('main color ===========>>>>>>>>> ', color);
+  // console.log('Langue initiale:', lang);
 
   mainWindow = new BrowserWindow({
     width: 800,
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: false,
-      nodeIntegration: true,
-      enableRemoteModule: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false,
       webSecurity: true,
     }
   });

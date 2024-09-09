@@ -1,6 +1,90 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  send: (channel, data) => ipcRenderer.send(channel, data),
-  receive: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
-});
+console.log('Preload script is running');
+
+const electronAPI = {
+  domReady: (callback) => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', callback);
+    } else {
+      callback();
+    }
+  },
+
+  // DOM Manipulation
+  getElementById: (id) => document.getElementById(id),
+  querySelector: (selector) => document.querySelector(selector),
+  querySelectorAll: (selector, callback) => {
+    const elements = document.querySelectorAll(selector);
+    callback(Array.from(elements));
+  },
+  addEventListener: (selector, event, callback) => {
+    const element = document.querySelector(selector);
+    if (element) element.addEventListener(event, callback);
+  },
+  removeEventListener: (selector, event, callback) => {
+    const element = document.querySelector(selector);
+    if (element) element.removeEventListener(event, callback);
+  },
+  setAttribute: (selector, attr, value) => {
+    const element = document.querySelector(selector);
+    if (element) element.setAttribute(attr, value);
+  },
+  setProperty: (selector, prop, value) => {
+    console.log(`setProperty called with: ${selector}, ${prop}, ${value}`);
+    const element = document.querySelector(selector);
+    if (element) {
+      element[prop] = value;
+      console.log(`Property set successfully`);
+    } else {
+      console.log(`Element not found for selector: ${selector}`);
+    }
+  },
+  getValue: (selector, callback) => {
+    const element = document.querySelector(selector);
+    if (callback && element) {
+      callback(element.value);
+      return;
+    }
+    return element ? element.value : null;
+  },
+  setValue: (selector, value) => {
+    const element = document.querySelector(selector);
+    if (element) element.value = value;
+  },
+  setInnerHTML: (selector, html) => {
+    const element = document.querySelector(selector);
+    if (element) element.innerHTML = html;
+  },
+  setTextContent: (selector, text) => {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = text;
+  },
+  focus: (selector) => {
+    const element = document.querySelector(selector);
+    if (element) element.focus();
+  },
+  setSelectionRange: (selector, start, end) => {
+    const element = document.querySelector(selector);
+    if (element) element.setSelectionRange(start, end);
+  },
+  // IPC Communication
+  sendIpcMessage: (channel, ...args) => ipcRenderer.send(channel, ...args),
+  onIpcMessage: (channel, func) => {
+    const subscription = (event, ...args) => func(...args);
+    ipcRenderer.on(channel, subscription);
+    return () => {
+      ipcRenderer.removeListener(channel, subscription);
+    };
+  },
+
+  // Utility Functions
+  setDocumentTitle: (title) => {
+    document.title = title;
+  },
+};
+
+// Expose the entire electronAPI object
+contextBridge.exposeInMainWorld('electronAPI', electronAPI);
+
+console.log('Exposed API functions:', Object.keys(electronAPI));

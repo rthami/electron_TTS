@@ -80,35 +80,37 @@ async function readTextFile(event, picoCommand, currentLanguage, getMessage, mpl
     });
 }
 
-// Fonction pour lire les chunks séquentiellement
-async function readChunksSequentially(event, chunks, lang, currentLanguage, getMessage, mplayerProcess) {
+async function readChunksSequentially(event, chunks, lang, currentLanguage, getMessage, mplayerProcess, sendToRenderer) {
     console.log('Début de la lecture des morceaux de texte séquentiellement');
     setIsReading(true);
 
     for (let i = 0; i < chunks.length; i++) {
-
         if (!getIsReading()) {
             console.log('Lecture interrompue');
             break;
         }
-        console.log(`Lecture du morceau de texte n°${i + 1} sur ${chunks.length}`);
 
+        console.log(`Lecture du morceau de texte n°${i + 1} sur ${chunks.length}`);
         const escapedText = escapeSpecialChars(chunks[i]);
         const picoCommand = `pico2wave -l "${lang}" -w ${path.join(__dirname, 'output.wav')} "${escapedText}"`;
 
         try {
-            // Utilise la fonction asynchrone readTextFile pour lire chaque chunk            
-            event.reply('speak', chunks[i]);
+            // Informer le processus principal du statut de chaque chunk
+            sendToRenderer('speak-progress', chunks[i]);
+            
+            // Lire le chunk
             await readTextFile(event, picoCommand, currentLanguage, getMessage, mplayerProcess);
         } catch (err) {
             console.error('Erreur lors de la lecture du texte', err);
-            event.reply('speak-error', `Erreur lors de la lecture du chunk : ${err}`);
-            break; // Arrêter en cas d'erreur
+            sendToRenderer('speak-error', `Erreur lors de la lecture du chunk : ${err}`);
+            break;
         }
     }
 
     setIsReading(false);
+    sendToRenderer('speak-complete', 'Lecture terminée');
 }
+
 
 module.exports = {
     checkProgramAvailability,
