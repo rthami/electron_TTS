@@ -6,15 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="HTMLTitle">Application de Synthèse Vocale</title>
   <!-- Utilisation du fichier CSS local -->
-  <link rel="stylesheet" href="./css/pico.min.css">
+  <link rel="stylesheet" href="./css/color.blue.css" id="cssColor">
   <link rel="stylesheet" href="./css/main.css">
   <style></style>
 </head>
 
 <body>
+  <img src="./img/logo-preview.png" id="logo" />
+  <div class="background-wave"></div>
   <main class="container">
+    <h1 data-i18n="HTMLTitle" id="title">Application de Synthèse Vocale</h1>
     <article>
-      <h3 data-i18n="HTMLTitle">Application de Synthèse Vocale</h3>
       <div class="textBox">
         <textarea id="text-input" placeholder="Entrez votre texte ici..."></textarea>
         <button id="clear-text-button" class="icone-button" data-tooltip="Vider le texte" data-placement="left">
@@ -68,6 +70,13 @@
           <option value="es" data-i18n="HTMLLangES">Espagnol</option>
           <option value="de" data-i18n="HTMLLangDE">Allemand</option>
           <option value="it" data-i18n="HTMLLangIT">Italien</option>
+        </select>
+
+        <label for="interface-color-select" data-i18n="HTMLColorTitleSelect">Couleurs:</label>
+        <select id="interface-color-select">
+          <option value="blue" data-i18n="HTMLColorBlue">Bleu</option>
+          <option value="jade" data-i18n="HTMLColorJade">Jade</option>
+          <option value="indigo" data-i18n="HTMLColorIndigo">Indigo</option>
         </select>
         <footer>
           <button class="secondary" id="close-pref-modal" data-i18n="HTMLCloseButton">

@@ -6,9 +6,9 @@ const { app } = require('electron');
 const userDataPath = app.getPath('userData');
 const preferencesFilePath = path.join(userDataPath, 'preferences.json');
 
-let preferences = { interfaceLang: 'fr' };
+let preferences = { interfaceLang: 'fr', interfaceColor : 'blue'};
 
-function loadPreferences() {
+const loadPreferences = () => {
   // console.log('Chargement des préférences depuis :', preferencesFilePath);
   try {
     if (fs.existsSync(preferencesFilePath)) {
@@ -26,9 +26,9 @@ function loadPreferences() {
   return preferences;
 }
 
-function savePreferences(newPreferences) {
+const savePreferences = (newPreferences) => {
   preferences = { ...preferences, ...newPreferences };
-  // console.log('Sauvegarde des préférences dans :', preferencesFilePath);
+  console.log('Sauvegarde des préférences dans :', preferencesFilePath);
 
   try {
     fs.writeFileSync(preferencesFilePath, JSON.stringify(preferences, null, 2));

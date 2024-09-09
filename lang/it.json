@@ -9,6 +9,7 @@
   "resumed": "Ripresa della riproduzione.",
   "noReadingInProgress": "Nessuna lettura in corso.",
   "readingStopped": "Lettura interrotta.",
+  "fileLoaded": "Caricamento del file",
   "fileLoadError": "Errore durante il caricamento del file: {0}",
   "fileSelectionCancelled": "Selezione del file annullata.",
   "dialogOpenError": "Errore durante l'apertura della finestra di dialogo: {0}",

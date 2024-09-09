@@ -95,12 +95,9 @@ async function readChunksSequentially(event, chunks, lang, currentLanguage, getM
 
         const escapedText = escapeSpecialChars(chunks[i]);
         const picoCommand = `pico2wave -l "${lang}" -w ${path.join(__dirname, 'output.wav')} "${escapedText}"`;
-        console.log(`Commande pico2wave : ${picoCommand}`);
 
         try {
-            // Utilise la fonction asynchrone readTextFile pour lire chaque chunk
-            console.log(' current phrase ============== ', chunks[i]);
-            
+            // Utilise la fonction asynchrone readTextFile pour lire chaque chunk            
             event.reply('speak', chunks[i]);
             await readTextFile(event, picoCommand, currentLanguage, getMessage, mplayerProcess);
         } catch (err) {

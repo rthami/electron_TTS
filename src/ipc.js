@@ -23,6 +23,8 @@ function setupIPC(mainWindow) {
   // Charger les préférences au démarrage
   const prefs = loadPreferences();
   let currentLanguage = prefs.interfaceLang;
+  let currentColor = prefs.interfaceColor;
+
 
   // Vérifier la disponibilité des programmes nécessaires
   checkProgramAvailability('pico2wave', (picoExists) => {
@@ -52,6 +54,10 @@ function setupIPC(mainWindow) {
       const messages = loadMessages(currentLanguage);
       mainWindow.webContents.send('language-changed', messages);
     }
+    if (newPreferences.interfaceColor && newPreferences.interfaceColor !== currentColor) {
+      currentColor = newPreferences.interfaceColor;
+      mainWindow.webContents.send('color-changed', currentColor);
+    }
   });
 
   // Gestionnaire pour changer la langue de l'interface
@@ -66,7 +72,7 @@ function setupIPC(mainWindow) {
   // Gestionnaire pour demander les messages initiaux
   ipcMain.on('request-messages', (event) => {
     const messages = loadMessages(currentLanguage);
-    event.reply('initial-messages', messages);
+    event.reply('initial-messages', {initialMessages:messages});
   });
 
   function processTextIntoChunks(text, charLimit) {
@@ -74,12 +80,12 @@ function setupIPC(mainWindow) {
     const chunks = [];
 
     sentences.forEach(sentence => {
-      if (sentence.length > CHAR_LIMIT) {
+      if (sentence.length > charLimit) {
         // Si une phrase dépasse la limite, la diviser
         let remainingSentence = sentence;
         while (remainingSentence.length > 0) {
-          chunks.push(remainingSentence.slice(0, CHAR_LIMIT).trim());
-          remainingSentence = remainingSentence.slice(CHAR_LIMIT);
+          chunks.push(remainingSentence.slice(0, charLimit).trim());
+          remainingSentence = remainingSentence.slice(charLimit);
         }
       } else {
         // Sinon, ajouter la phrase comme un chunk
@@ -135,6 +141,7 @@ function setupIPC(mainWindow) {
         try {
           const text = fs.readFileSync(filePath, 'utf-8');
           event.reply('file-loaded', { filePath, text });
+          event.reply('speak-success', getMessage('fileLoaded', currentLanguage));
         } catch (error) {
           event.reply('speak-error', getMessage('fileLoadError', currentLanguage, error.message));
         }

@@ -10,16 +10,19 @@ let mainWindow = null;
 function createWindow() {
   const prefs = loadPreferences();
   const lang = prefs.interfaceLang || app.getLocale() || 'fr';
+  const color = prefs.interfaceColor || 'blue';
+  console.log('main color ===========>>>>>>>>> ', color);  
   console.log('Langue initiale:', lang);
 
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 650,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: false,
       nodeIntegration: true,
       enableRemoteModule: true,
+      webSecurity: true,
     }
   });
 
@@ -27,8 +30,7 @@ function createWindow() {
 
   const initialMessages = loadMessages(lang);
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('initial-messages', initialMessages);
-    mainWindow.webContents.send('preferences-loaded', prefs);
+    mainWindow.webContents.send('initial-messages', initialMessages, color, lang);
   });
 
   setupIPC(mainWindow);
