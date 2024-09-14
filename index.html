@@ -4,19 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
   <title data-i18n="HTMLTitle">Application de Synthèse Vocale</title>
   <!-- Utilisation du fichier CSS local -->
-  <link rel="stylesheet" href="./css/color.blue.css" id="cssColor">
+  <link rel="stylesheet" href="./css/background.css">
   <link rel="stylesheet" href="./css/main.css">
-  <style></style>
+  <link rel="stylesheet" href="./css/color.blue.css" id="cssColor">
 </head>
 
 <body>
+  <div class="bg"></div>
+  <div class="bg bg2"></div>
+  <div class="bg bg3"></div>
   <img src="./img/logo-preview.png" id="logo" />
   <div class="background-wave"></div>
   <main class="container">
-    <h1 data-i18n="HTMLTitle" id="title">Application de Synthèse Vocale</h1>
+    <h1 data-i18n="HTMLTitle" id="title"><span>Application de Synthèse Vocale</span></h1>
     <article>
       <div class="textBox">
         <textarea id="text-input" placeholder="Entrez votre texte ici..."></textarea>
@@ -24,14 +28,33 @@
           <img src="./icone/refresh-outline.svg" alt="Vider le texte" class="icone">
         </button>
       </div>
-      <select id="lang-select">
-        <option value="fr-FR" data-i18n="HTMLLangFR">Français</option>
-        <option value="en-US" data-i18n="HTMLLangEN">Anglais</option>
-        <option value="es-ES" data-i18n="HTMLLangES">Espagnol</option>
-        <option value="de-DE" data-i18n="HTMLLangDE">Allemand</option>
-        <option value="it-IT" data-i18n="HTMLLangIT">Italien</option>
-      </select>
-      <br>
+      <div class="flexbox">
+        <select id="lang-select">
+          <option value="fr" data-i18n="HTMLLangFR">Français</option>
+          <option value="en" data-i18n="HTMLLangEN">Anglais</option>
+          <option value="es" data-i18n="HTMLLangES">Espagnol</option>
+          <option value="de" data-i18n="HTMLLangDE">Allemand</option>
+          <option value="it" data-i18n="HTMLLangIT">Italien</option>
+        </select>
+        <button class="secondary to trad-display" disabled>
+          <img src="./icone/arrow-forward-outline.svg" alt="Pause/Reprendre" class="icone">
+        </button>
+        <select id="lang-trad-select" class="trad-display">
+          <option value="fr" data-i18n="HTMLLangFR">Français</option>
+          <option value="en" data-i18n="HTMLLangEN">Anglais</option>
+          <option value="es" data-i18n="HTMLLangES">Espagnol</option>
+          <option value="de" data-i18n="HTMLLangDE">Allemand</option>
+          <option value="it" data-i18n="HTMLLangIT">Italien</option>
+        </select>
+      </div>
+      <div class="trad-display">
+        <button id="translateButton" class="fullsize" data-i18n="HTMLTranslateButton">
+          Traduction
+        </button>
+        <textarea id="outputText" placeholder="Traduction"></textarea>
+      </div>
+
+      
       <div class="grid">
         <button id="speak-button" class="contrast">
           <span data-i18n="HTMLPlayButton">Lire le Texte</span>
@@ -52,12 +75,15 @@
       </button>
       <div id="status"></div>
     </article>
+    <div class="flexbox"><!-- bouton pour ouvrir la modale -->
+      <button id="pref-button" class="icone-button" data-i18n="HTMLPrefButton" data-tooltip="Préférences">
+        <img src="./icone/settings-outline.svg" alt="Préférences" class="icone">
+      </button>
 
-    <!-- Section des préférences utilisateur -->
-    <!-- Ajoutez un bouton pour ouvrir la modale -->
-    <button id="pref-button" class="icone-button" data-i18n="HTMLPrefButton" data-tooltip="Préférences">
-      <img src="./icone/settings-outline.svg" alt="Préférences" class="icone">
-    </button>
+      <button id="openTranslate" class="icone-button" data-i18n="HTMLTranslateButton" data-tooltip="Traduction">
+        <img src="./icone/language-outline.svg" alt="Préférences" class="icone">
+      </button>
+    </div>
 
     <!-- Créez la modale des préférences -->
     <dialog id="pref-modal">
@@ -78,6 +104,7 @@
           <option value="blue" data-i18n="HTMLColorBlue">Bleu</option>
           <option value="jade" data-i18n="HTMLColorJade">Jade</option>
           <option value="indigo" data-i18n="HTMLColorIndigo">Indigo</option>
+          <option value="pink" data-i18n="HTMLColorPink">Pink</option>
         </select>
         <footer>
           <button class="secondary" id="close-pref-modal" data-i18n="HTMLCloseButton">

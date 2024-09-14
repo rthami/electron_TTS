@@ -1,7 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-console.log('Preload script is running');
-
 const electronAPI = {
   domReady: (callback) => {
     if (document.readyState === 'loading') {
@@ -10,7 +8,6 @@ const electronAPI = {
       callback();
     }
   },
-
   // DOM Manipulation
   getElementById: (id) => document.getElementById(id),
   querySelector: (selector) => document.querySelector(selector),
@@ -69,7 +66,21 @@ const electronAPI = {
     if (element) element.setSelectionRange(start, end);
   },
   // IPC Communication
-  sendIpcMessage: (channel, ...args) => ipcRenderer.send(channel, ...args),
+  stateMethode: (channel, data) => {
+    return new Promise((resolve, reject) => {
+      ipcRenderer.once(channel, (event, response) => {
+        resolve(response);
+      });
+      ipcRenderer.send(channel, data);
+    });
+  },
+  sendIpcMessage: (channel,...args) => {
+    if (args.length === 0) {
+      ipcRenderer.send(channel);
+    } else {
+      ipcRenderer.send(channel,...args);
+    }
+  },
   onIpcMessage: (channel, func) => {
     const subscription = (event, ...args) => func(...args);
     ipcRenderer.on(channel, subscription);
@@ -78,6 +89,10 @@ const electronAPI = {
     };
   },
 
+  // Méthode IPC pour traduire du texte
+  traduireTexte: (texte, sourceLang, targetLang) => {
+    return ipcRenderer.invoke('traduire-texte', texte, sourceLang, targetLang);
+  },
   // Utility Functions
   setDocumentTitle: (title) => {
     document.title = title;

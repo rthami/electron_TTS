@@ -1,15 +1,16 @@
-@import "./pico.min.css";
+@import "./pico.pink.css";
+
 .background-wave {
     background:
         url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
         linear-gradient(135deg,
-        hsl(0, 0%, 23%) 0%,    
-        hsl(0, 0%, 29%) 25%,  
-        hsl(0, 0%, 20%) 50%,   
-        hsl(0, 0%, 36%) 75%,   
-        hsl(0, 0%, 30%) 100%);
-    background-blend-mode: multiply;
-    filter: contrast(150%) brightness(60%) grayscale(80%);
+            hsl(340, 72%, 10%) 0%,
+            hsl(340, 72%, 20%) 25%,
+            hsl(340, 72%, 30%) 50%,
+            hsl(340, 72%, 70%) 75%,
+            hsl(340, 72%, 90%) 100%);
+    background-blend-mode: overlay;
+    filter: contrast(120%) brightness(80%);
 }
 
 .background-wave:after {
@@ -17,12 +18,18 @@
     border-bottom: #fff solid 1px;
 }
 
-
 #logo {
     box-shadow: 0 2px 4px hsla(0, 0%, 5%, 0.59);
     border: #fff 1px solid;
     border-radius: 50%;
-    background-color: hsl(201, 99%, 34%);
+    background-color: hsl(340, 72%, 50%);
+}
+
+.bg {
+    background-image: radial-gradient(circle at center,
+            rgba(255, 105, 135, 0.8) 0%,
+            rgba(240, 128, 128, 0.7) 60%,
+            rgba(220, 160, 160, 0) 100%);
 }
 
 article {

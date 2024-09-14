@@ -11,20 +11,20 @@ const {
   CHAR_LIMIT,
   splitTextIntoPhrases
 } = require('./utils');
-const { setIsReading } = require('./state');
+const { setIsReading, getDisplayTrad, setDisplayTrad } = require('./state');
+
 
 let mplayerProcess = null;
 let isPaused = false;
 let isPicoAvailable = false;
 let isMplayerAvailable = false;
 
-function setupIPC(mainWindow) {
+const setupIPC = (mainWindow) => {
   const prefs = loadPreferences();
   let currentLanguage = prefs.interfaceLang;
   let currentColor = prefs.interfaceColor;
 
-  function sendToRenderer(channel, ...args) {
-    console.log(`Sending to renderer on channel ${channel} with args:`, ...args);  
+  const sendToRenderer = (channel, ...args) => { 
     if (mainWindow) {
       mainWindow.webContents.send(channel, ...args);
     } else {
@@ -65,7 +65,6 @@ function setupIPC(mainWindow) {
   });
 
   ipcMain.on('change-language', (event, newLang) => {
-    console.log('Changing language to:', newLang);
     currentLanguage = newLang;
     const messages = loadMessages(newLang);
     sendToRenderer('language-changed', messages);
@@ -79,7 +78,7 @@ function setupIPC(mainWindow) {
   //   event.reply('initial-messages', messages, currentColor, currentLanguage);
   // });
 
-  function processTextIntoChunks(text, charLimit) {
+  const  processTextIntoChunks = (text, charLimit) => {
     const sentences = splitTextIntoPhrases(text);
     const chunks = [];
 
@@ -154,6 +153,49 @@ function setupIPC(mainWindow) {
       event.reply('speak-error', getMessage('dialogOpenError', currentLanguage, err.message));
     });
   });
+
+  // tradution 
+  ipcMain.on('getDisplayTrad', (event) => {
+    const displayTrad = getDisplayTrad(); // Récupérer la valeur depuis le state
+    event.sender.send('getDisplayTrad', displayTrad); // Répondre avec la valeur
+  });
+
+  ipcMain.on('setDisplayTrad', (event,data) => {
+    setDisplayTrad(data);
+  });
+
+  ipcMain.handle('traduire-texte', async (event, texte, sourceLang, targetLang) => {
+
+    // Vérifie que les valeurs ne sont pas nulles ou vides
+    if (!texte || !sourceLang || !targetLang) {
+        throw new Error('Les paramètres de traduction sont manquants ou invalides.');
+    }
+
+    try {
+        const response = await fetch('http://localhost:5000/translate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                q: texte,
+                source: sourceLang,
+                target: targetLang
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP : ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.translatedText;
+    } catch (error) {
+        console.error("Erreur lors de la traduction :", error);
+        throw error; // Propagate the error to be handled in renderer
+    }
+});
+
 }
 
 module.exports = { setupIPC };

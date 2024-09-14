@@ -18,6 +18,7 @@
   "HTMLPauseButton": "Pause/Fortsetzen",
   "HTMLStopButton": "Stopp",
   "HTMLOpenFileButton": "Textdatei auswählen",
+  "HTMLTranslateButton":"Übersetzung",
   "HTMLPrefTitle": "Einstellungen",
   "HTMLPrefSave": "Einstellungen speichern",
   "HTMLLangFR": "Französisch",
@@ -32,5 +33,6 @@
   "HTMLColorTitleSelect": "Farben:",
   "HTMLColorBlue": "Blau",
   "HTMLColorJade": "Jade",
-  "HTMLColorIndigo": "Indigo"
+  "HTMLColorIndigo": "Indigo",
+  "HTMLColorPink":"Rosa"
 }

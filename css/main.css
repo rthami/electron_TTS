@@ -11,7 +11,7 @@ body {
     width: 100%;
     height: 75%;
     opacity: 0.7;
-    z-index: -2;
+    z-index: 2;
 }
 
 .background-wave:after {
@@ -23,33 +23,56 @@ body {
     height: 100%;
     background: url("../img/wave.svg") no-repeat bottom right;
     background-size: cover;
-    z-index: -1;
+    z-index: 1;
 }
 
 #logo {
-    content: "";
     position: fixed;
     top: 0;
     left: 10px;
-    width: 80px;
-    height: 80px;
-    z-index: 0;
+    width: 85px;
+    height: 85px;
+    z-index: 1000;
+    padding: 5px;
 }
+
 
 @font-face {
     font-family: 'Monterey';
     src: url('../fonts/MontereyFLF.ttf') format('truetype');
 }
 
+main {
+    position: relative;
+    z-index: 10;
+}
+
 #title {
     font-family: 'Monterey';
     position: absolute;
-    top: 23px;
-    left: 120px;
+    top: -33px;
+    text-align: center;
+    width: 100%;
+    letter-spacing: 4px;
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+	color: #999;
+}
+
+@media (max-width: 768px) {
+    #title {
+      top: -53px;
+    }
+    #logo {
+        display: none;
+    }    
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Monterey';
 }
 
 article {
-    background-color: hsla(0, 3%, 14%, 0.506);
+    background-color: hsla(0, 3%, 14%, 0.559);
     backdrop-filter: blur(10px);
     border-radius: 10px;
     padding: 20px;
@@ -124,6 +147,21 @@ button {
     transition: background-color 0.3s ease;
 }
 
+.to {
+    height: 65px;
+    margin:  0 12px;
+}
+
+.trad-display {
+    display: none;
+}
+
+.flexbox {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
 .grid {
     margin: 1em 0;
 }
@@ -154,3 +192,14 @@ button {
     top: 18px;
     right: 20px;
 }
+
+svg path {
+    stroke-dasharray: 100;
+    animation: dash 5s linear;
+  }
+  
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 1000;
+    }
+  }

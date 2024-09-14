@@ -4,6 +4,10 @@ const path = require('path');
 const { setupIPC } = require('./src/ipc');
 const { loadPreferences } = require('./src/preferences');
 const { loadMessages } = require('./src/languages');
+const { verifyLibreTranslate, startLibreTranslate } = require('./src/utils');
+
+
+verifyLibreTranslate();
 
 let mainWindow = null;
 
@@ -11,9 +15,7 @@ function createWindow() {
   const prefs = loadPreferences();
   const lang = prefs.interfaceLang || app.getLocale() || 'fr';
   const color = prefs.interfaceColor || 'blue';
-  // console.log('main color ===========>>>>>>>>> ', color);
-  // console.log('Langue initiale:', lang);
-
+  
   mainWindow = new BrowserWindow({
     width: 800,
     height: 800,
@@ -49,3 +51,8 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+app.on('ready', () => {
+  startLibreTranslate(); // Démarre LibreTranslate au démarrage d'Electron
+});
+

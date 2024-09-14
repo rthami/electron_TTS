@@ -1,18 +1,29 @@
+
+
 let currentFilePath = null;
+const langMap = {
+  'fr': 'fr-FR',
+  'en': 'en-US',
+  'es': 'es-ES',
+  'de': 'de-DE',
+  'it': 'it-IT'
+};
 
 const updateUILanguage = (messages) => {
-  console.log('enter updateUILanguage :', messages);
-
   window.electronAPI.querySelectorAll('[data-i18n]', (elements) => {
     elements.forEach(element => {
       const key = element.getAttribute('data-i18n');
       if (messages[key]) {
+        if (key === 'HTMLPrefButton' || key === 'HTMLTranslateButton') {
+          element.setAttribute('data-tooltip', messages[key]);
+          return;
+        }
         if (element.tagName === 'INPUT' && element.type === 'button') {
           // Vérifiez si l'élément existe avant de définir la propriété
           element.value = messages[key];
-        } else {
-          element.textContent = messages[key];
+          return;
         }
+        element.textContent = messages[key];
       } else {
         console.error(`Element not found for data-i18n key: ${key}`);
       }
@@ -20,15 +31,14 @@ const updateUILanguage = (messages) => {
   });
 };
 
-const changeColor = (color, place) => {
-  console.log('Received new color:', color, place);
+const changeColor = (color) => {
   window.electronAPI.setAttribute('#cssColor', 'href', `./css/color.${color}.css`);
 };
 
 const setInitvalue = (set) => {
-  window.electronAPI.setValue('#lang-select', set.readLang);
-  window.electronAPI.setValue('#interface-lang-select', set.lang);
-  window.electronAPI.setValue('#interface-color-select', set.color);
+  langMap[window.electronAPI.setValue('#lang-select', set.readLang)] || 'fr';
+  window.electronAPI.setValue('#interface-lang-select', set.lang) || 'fr';
+  window.electronAPI.setValue('#interface-color-select', set.color) || 'blue';
 };
 
 // console.log('Renderer script is running');
@@ -47,9 +57,7 @@ const setInitvalue = (set) => {
 // checkFunction('sendIpcMessage');
 
 const initUI = () => {
-  console.log('initUI function called');
   window.electronAPI.addEventListener('#pref-button', 'click', () => {
-    console.log('Pref button clicked');
     window.electronAPI.setProperty('#pref-modal', 'open', true);
   });
 
@@ -57,9 +65,13 @@ const initUI = () => {
     window.electronAPI.setProperty('#pref-modal', 'open', false);
   });
 
-  window.electronAPI.addEventListener('#speak-button', 'click', () => {
-    const lang = window.electronAPI.getValue('#lang-select');
-    const text = window.electronAPI.getValue('#text-input');
+  window.electronAPI.addEventListener('#speak-button', 'click', async () => {
+    const displayTrad = await window.electronAPI.stateMethode('getDisplayTrad');
+    const select = displayTrad ? '#lang-trad-select' : '#lang-select'
+    const textarea = displayTrad ? '#outputText' : '#text-input'
+    let lang = langMap[window.electronAPI.getValue(select)] || 'fr-FR';
+    const text = window.electronAPI.getValue(textarea);
+
     window.electronAPI.sendIpcMessage('speak', text, lang);
   });
 
@@ -98,15 +110,35 @@ const initUI = () => {
     window.electronAPI.sendIpcMessage('change-color', newColor);
   });
 
-  window.electronAPI.sendIpcMessage('request-messages');
-};
+  // window.electronAPI.sendIpcMessage('request-messages');
 
-const langMap = {
-  'fr': 'fr-FR',
-  'en': 'en-US',
-  'es': 'es-ES',
-  'de': 'de-DE',
-  'it': 'it-IT'
+
+  // Ajouter un bouton de traduction
+  // Uncaught Error: window.electronAPI.sendIpcMessage(...) is not a function
+
+  window.electronAPI.addEventListener('#openTranslate', 'click', async () => {
+    const displayTrad = await window.electronAPI.stateMethode('getDisplayTrad');
+    window.electronAPI.sendIpcMessage('setDisplayTrad', !displayTrad);
+    window.electronAPI.querySelectorAll('.trad-display', (elements) => {
+      elements.forEach((e) => {
+        e.style.display = !displayTrad ? 'block' : 'none';
+      });
+    });
+  });
+
+
+  window.electronAPI.addEventListener('#translateButton', 'click', async () => {
+    const texte = window.electronAPI.getValue('#text-input');
+    const sourceLang = window.electronAPI.getValue('#lang-select') || 'fr';
+    const targetLang = window.electronAPI.getValue('#lang-trad-select') || 'en';
+
+    try {
+      const translatedText = await window.electronAPI.traduireTexte(texte, sourceLang, targetLang);
+      window.electronAPI.setProperty('#outputText', 'innerText', translatedText);
+    } catch (error) {
+      console.error('Erreur lors de la traduction :', error);
+    }
+  });
 };
 
 window.electronAPI.onIpcMessage('language-changed', (messages) => {
@@ -119,11 +151,11 @@ window.electronAPI.onIpcMessage('color-changed', (messages) => {
 
 window.electronAPI.onIpcMessage('initial-messages', (messages, color, lang) => {
   changeColor(color, 'initial-messages');
-  setInitvalue({ color, lang, readLang: langMap[lang] });
+  setInitvalue({ color, lang, readLang: lang });
   updateUILanguage(messages);
 });
 
-function handleIpcEvent(event, data) {
+const handleIpcEvent = async (event, data) => {
   switch (event) {
     case 'speak-success':
     case 'speak-error':
@@ -136,18 +168,19 @@ function handleIpcEvent(event, data) {
       currentFilePath = data.filePath;
       break;
     case 'speak-progress':
-      window.electronAPI.getValue('#text-input', (text) => {
+      const displayTrad = await window.electronAPI.stateMethode('getDisplayTrad');
+      const textarea = displayTrad ? '#outputText' : '#text-input'
+      window.electronAPI.getValue(textarea, (text) => {
         const startIndex = text.indexOf(data);
         if (startIndex === -1) {
           console.error('Data not found in text.');
           return;
         }
         const endIndex = startIndex + data.length;
-        window.electronAPI.focus('#text-input');
-        window.electronAPI.setSelectionRange('#text-input', startIndex, endIndex);
+        window.electronAPI.focus(textarea);
+        window.electronAPI.setSelectionRange(textarea, startIndex, endIndex);
 
-        // Ajouter le code pour faire défiler la textarea
-        const textArea = window.electronAPI.querySelector('#text-input');
+        const textArea = window.electronAPI.querySelector(textarea);
         const startPos = textArea.value.substring(0, startIndex).length;
         const scrollPos = startPos / textArea.value.length * textArea.scrollHeight;
         textArea.scrollTop = scrollPos;

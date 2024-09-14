@@ -18,6 +18,7 @@
   "HTMLPauseButton": "Pausa/Riprendi",
   "HTMLStopButton": "Stop",
   "HTMLOpenFileButton": "Seleziona un file di testo",
+  "HTMLTranslateButton":"Traduzione",
   "HTMLPrefTitle": "Preferenze",
   "HTMLPrefSave": "Salva preferenze",
   "HTMLLangFR": "Francese",
@@ -32,5 +33,6 @@
   "HTMLColorTitleSelect": "Colori:",
   "HTMLColorBlue": "Blu",
   "HTMLColorJade": "Giada",
-  "HTMLColorIndigo": "Indaco"
+  "HTMLColorIndigo": "Indaco",
+  "HTMLColorPink":"Rosa"
 }
