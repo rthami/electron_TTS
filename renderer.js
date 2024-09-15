@@ -31,12 +31,13 @@ const updateUILanguage = (messages) => {
   });
 };
 
-const changeColor = (color) => {
+const changeCssColor = (color) => {
   window.electronAPI.setAttribute('#cssColor', 'href', `./css/color.${color}.css`);
 };
 
 const setInitvalue = (set) => {
   langMap[window.electronAPI.setValue('#lang-select', set.readLang)] || 'fr';
+  window.electronAPI.setValue('#lang-trad-select', set.readLang) || 'fr';
   window.electronAPI.setValue('#interface-lang-select', set.lang) || 'fr';
   window.electronAPI.setValue('#interface-color-select', set.color) || 'blue';
 };
@@ -146,11 +147,11 @@ window.electronAPI.onIpcMessage('language-changed', (messages) => {
 });
 
 window.electronAPI.onIpcMessage('color-changed', (messages) => {
-  changeColor(messages, 'color-changed');
+  changeCssColor(messages);
 });
 
 window.electronAPI.onIpcMessage('initial-messages', (messages, color, lang) => {
-  changeColor(color, 'initial-messages');
+  changeCssColor(color);
   setInitvalue({ color, lang, readLang: lang });
   updateUILanguage(messages);
 });

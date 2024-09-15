@@ -1,14 +1,21 @@
 @import "./pico.pink.css";
+html, body {
+    background: #fff;
+    background: linear-gradient(90deg, rgba(167,166,170,1) 0%, 
+    rgba(213,133,133,0.7233394334296219) 35%, 
+    rgba(142,85,85,0.4180173045780813) 100%);
+}
+
 
 .background-wave {
     background:
         url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
         linear-gradient(135deg,
-            hsl(340, 72%, 10%) 0%,
-            hsl(340, 72%, 20%) 25%,
-            hsl(340, 72%, 30%) 50%,
-            hsl(340, 72%, 70%) 75%,
-            hsl(340, 72%, 90%) 100%);
+            hsla(61, 86%, 42%, 0.681) 0%,
+            hsla(78, 73%, 28%, 0.684) 25%,
+            hsla(66, 73%, 30%, 0.586) 50%,
+            hsla(56, 73%, 70%, 0.53) 75%,
+            hsla(63, 73%, 90%, 0.618) 100%);
     background-blend-mode: overlay;
     filter: contrast(120%) brightness(80%);
 }
@@ -27,8 +34,8 @@
 
 .bg {
     background-image: radial-gradient(circle at center,
-            rgba(255, 105, 135, 0.8) 0%,
-            rgba(240, 128, 128, 0.7) 60%,
+            rgba(122, 120, 120, 0.8) 0%,
+            rgba(84, 80, 80, 0.7) 60%,
             rgba(220, 160, 160, 0) 100%);
 }
 

@@ -23,8 +23,6 @@
 }
 
 #logo {
-    box-shadow: 0 2px 4px hsla(160, 100%, 96%, 0.3);
-    border-radius: 50%;
     background-color: hsl(160, 100%, 27%);
     -webkit-mask-image: url('../img/logo-preview.png');
     mask-image: url('../img/logo-preview.png');
@@ -32,6 +30,10 @@
     mask-size: cover;
     -webkit-mask-composite: destination-in;
     mask-composite: destination-in;
+    padding: 0;
+    margin: 0;
+    width: 100PX;
+    height: 100PX;
 }
 
 article {
