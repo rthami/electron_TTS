@@ -165,6 +165,8 @@ const setupIPC = (mainWindow) => {
   });
 
   ipcMain.handle('traduire-texte', async (event, texte, sourceLang, targetLang) => {
+    console.log(texte, sourceLang, targetLang);
+    
 
     // Vérifie que les valeurs ne sont pas nulles ou vides
     if (!texte || !sourceLang || !targetLang) {

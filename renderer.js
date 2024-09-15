@@ -68,11 +68,9 @@ const initUI = () => {
 
   window.electronAPI.addEventListener('#speak-button', 'click', async () => {
     const displayTrad = await window.electronAPI.stateMethode('getDisplayTrad');
-    const select = displayTrad ? '#lang-trad-select' : '#lang-select'
     const textarea = displayTrad ? '#outputText' : '#text-input'
-    let lang = langMap[window.electronAPI.getValue(select)] || 'fr-FR';
+    const lang = langMap[window.electronAPI.getValue('#lang-select')] || 'fr-FR';
     const text = window.electronAPI.getValue(textarea);
-
     window.electronAPI.sendIpcMessage('speak', text, lang);
   });
 
@@ -111,12 +109,6 @@ const initUI = () => {
     window.electronAPI.sendIpcMessage('change-color', newColor);
   });
 
-  // window.electronAPI.sendIpcMessage('request-messages');
-
-
-  // Ajouter un bouton de traduction
-  // Uncaught Error: window.electronAPI.sendIpcMessage(...) is not a function
-
   window.electronAPI.addEventListener('#openTranslate', 'click', async () => {
     const displayTrad = await window.electronAPI.stateMethode('getDisplayTrad');
     window.electronAPI.sendIpcMessage('setDisplayTrad', !displayTrad);
@@ -127,11 +119,10 @@ const initUI = () => {
     });
   });
 
-
   window.electronAPI.addEventListener('#translateButton', 'click', async () => {
     const texte = window.electronAPI.getValue('#text-input');
-    const sourceLang = window.electronAPI.getValue('#lang-select') || 'fr';
-    const targetLang = window.electronAPI.getValue('#lang-trad-select') || 'en';
+    const sourceLang = window.electronAPI.getValue('#lang-trad-select') || 'fr';
+    const targetLang = window.electronAPI.getValue('#lang-select') || 'en';
 
     try {
       const translatedText = await window.electronAPI.traduireTexte(texte, sourceLang, targetLang);
